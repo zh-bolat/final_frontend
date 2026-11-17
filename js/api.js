@@ -127,3 +127,105 @@ function isValidRates(value) {
       return typeof rate === 'number' && rate > 0;
     });
 }
+
+/* ===== Weather: WeatherService and ForecastDay =====
+   Open-Meteo returns the forecast as parallel arrays:
+   daily.time[i], daily.weather_code[i], daily.temperature_2m_max[i] ...
+   WeatherService turns position i of every array into one ForecastDay object. */
+
+// WMO weather codes used by Open-Meteo → text and icon
+const weatherCodes = [
+  { codes: [0], label: 'Clear sky', icon: '☀️' },
+  { codes: [1, 2], label: 'Partly cloudy', icon: '⛅' },
+  { codes: [3], label: 'Cloudy', icon: '☁️' },
+  { codes: [45, 48], label: 'Fog', icon: '🌫️' },
+  { codes: [51, 53, 55, 56, 57], label: 'Drizzle', icon: '🌦️' },
+  { codes: [61, 63, 65, 66, 67, 80, 81, 82], label: 'Rain', icon: '🌧️' },
+  { codes: [71, 73, 75, 77, 85, 86], label: 'Snow', icon: '❄️' },
+  { codes: [95, 96, 99], label: 'Thunderstorm', icon: '⛈️' }
+];
+
+class ForecastDay {
+  constructor(date, code, maxTemp, minTemp, rainChance) {
+    this.date = date; // "2026-11-18"
+    this.code = code;
+    this.maxTemp = Math.round(maxTemp);
+    this.minTemp = Math.round(minTemp);
+    this.rainChance = rainChance === null || rainChance === undefined ? 0 : rainChance;
+  }
+
+  getWeather() {
+    const code = this.code;
+    const match = weatherCodes.find(function (item) {
+      return item.codes.includes(code);
+    });
+    return match || { label: 'Mixed weather', icon: '🌤️' };
+  }
+
+  isToday() {
+    return this.date === toInputDate(getToday());
+  }
+
+  // "Today" or "Wed"
+  getDayName() {
+    if (this.isToday()) {
+      return 'Today';
+    }
+    return new Date(this.date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short' });
+  }
+
+  // "18 Nov"
+  getShortDate() {
+    return new Date(this.date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  }
+
+  // A dry day without storms is a nice day to cross the city
+  isGoodForVisit() {
+    return this.rainChance <= 30 && this.code < 61;
+  }
+
+  // "Wednesday 18 November: Cloudy, 4° / −3°, 10% chance of rain"
+  getDescription() {
+    return formatLongDate(this.date) + ': ' + this.getWeather().label + ', ' +
+      this.maxTemp + '° / ' + this.minTemp + '°, ' + this.rainChance + '% chance of rain';
+  }
+}
+
+class WeatherService extends ApiService {
+  constructor(latitude, longitude) {
+    super('https://api.open-meteo.com/v1/', 8000);
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
+
+  // Returns an array of ForecastDay objects (may be empty)
+  async getForecast(days) {
+    const data = await this.getJson('forecast', {
+      latitude: this.latitude,
+      longitude: this.longitude,
+      daily: 'weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max',
+      timezone: 'auto',
+      forecast_days: days
+    });
+
+    const daily = data && data.daily;
+    if (!daily || !Array.isArray(daily.time)) {
+      throw new ApiError('The forecast came back in an unexpected format.', 'data');
+    }
+
+    return daily.time
+      .map(function (date, i) {
+        return new ForecastDay(
+          date,
+          daily.weather_code[i],
+          daily.temperature_2m_max[i],
+          daily.temperature_2m_min[i],
+          daily.precipitation_probability_max[i]
+        );
+      })
+      // A day without temperatures is useless, so it is skipped
+      .filter(function (day) {
+        return Number.isFinite(day.maxTemp) && Number.isFinite(day.minTemp);
+      });
+  }
+}
