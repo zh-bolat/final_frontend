@@ -104,13 +104,49 @@ async function loadForecast() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  loadForecast();
+/* ===== Choosing a day fills the date field of the booking form ===== */
 
-  // The retry button is created later, so the click is delegated
+// Highlights the tile whose date is in the form right now
+function syncForecastSelection() {
+  const chosenDate = bookingForm.elements.date.value;
+  forecastDays.querySelectorAll('button.forecast-day').forEach(function (button) {
+    const isChosen = button.dataset.date === chosenDate;
+    button.classList.toggle('is-selected', isChosen);
+    button.setAttribute('aria-pressed', String(isChosen));
+  });
+}
+
+function chooseForecastDay(date) {
+  const dateInput = bookingForm.elements.date;
+  dateInput.value = date;
+  bookingValidator.validateField(dateInput); // the same rules as typing the date by hand
+  syncForecastSelection();
+  showToast('Visit date set to ' + formatLongDate(date));
+  dateInput.focus({ preventScroll: true });
+  $('html, body').animate({ scrollTop: $(dateInput).offset().top - 160 }, 400);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  loadForecast().then(syncForecastSelection);
+
+  // The tiles and the retry button are created later, so the click is delegated
   forecastDays.addEventListener('click', function (event) {
     if (event.target.id === 'forecast-retry') {
-      loadForecast();
+      loadForecast().then(syncForecastSelection);
+      return;
     }
+    const day = event.target.closest('button.forecast-day');
+    if (day) {
+      chooseForecastDay(day.dataset.date);
+    }
+  });
+
+  // A date typed by hand also moves the highlight
+  bookingForm.elements.date.addEventListener('input', syncForecastSelection);
+  bookingForm.elements.date.addEventListener('change', syncForecastSelection);
+
+  // "reset" fires before the fields are emptied, so the check waits one moment
+  bookingForm.addEventListener('reset', function () {
+    setTimeout(syncForecastSelection, 0);
   });
 });
