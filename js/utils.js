@@ -121,8 +121,8 @@ function createProductCard(product, columnClass) {
         <dl class="product-details">
           <div><dt>Material</dt><dd>${product.material}</dd></div>
           <div><dt>Size, cm</dt><dd>${product.size}</dd></div>
-          <div><dt>Delivery</dt><dd>${product.deliveryDays} days</dd></div>
-          <div><dt>Room</dt><dd>${getRoomLabel(product.room)}</dd></div>
+          <div><dt>Delivery</dt><dd>${product.getDeliveryText()}</dd></div>
+          <div><dt>Room</dt><dd>${product.getRoomLabel()}</dd></div>
         </dl>
       </div>
     </article>`;

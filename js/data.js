@@ -3,10 +3,11 @@
   All products and gallery photos live in these arrays.
   The pages build their cards, tables and photo grid from them with JavaScript,
   so a new product only has to be added here once.
+  productData holds plain objects; js/models.js turns each one into a Product.
 */
 
-// Array 1: every product in the catalog
-const products = [
+// Array 1: every product in the catalog (plain data, see the Product class)
+const productData = [
   {
     id: 'nord-sofa',
     name: 'Nord sofa',

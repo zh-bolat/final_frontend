@@ -17,12 +17,6 @@ const filters = {
   sort: 'featured'
 };
 
-// Returns true when the product name, category or material contains the text
-function matchesSearch(product, text) {
-  const haystack = (product.name + ' ' + product.category + ' ' + product.material).toLowerCase();
-  return haystack.includes(text.trim().toLowerCase());
-}
-
 // Returns a sorted copy of the list; the original array is not changed
 function sortProducts(list, sortBy) {
   const sorted = list.slice();
@@ -44,8 +38,8 @@ function sortProducts(list, sortBy) {
 // Returns a new array with only the products that pass every filter, sorted
 function getFilteredProducts(list, currentFilters) {
   const filtered = list.filter(function (product) {
-    const roomMatches = currentFilters.room === 'all' || product.room === currentFilters.room;
-    return roomMatches && matchesSearch(product, currentFilters.search);
+    // isInRoom() and matches() are methods of the Product class (js/models.js)
+    return product.isInRoom(currentFilters.room) && product.matches(currentFilters.search);
   });
   return sortProducts(filtered, currentFilters.sort);
 }
@@ -94,7 +88,7 @@ function renderCompareTable(list) {
       <td>${product.category}</td>
       <td>${product.material}</td>
       <td>${product.size}</td>
-      <td>${product.deliveryDays} days</td>
+      <td>${product.getDeliveryText()}</td>
       <td class="price text-end">${formatPrice(product.price)}</td>`;
     body.appendChild(row);
   }
