@@ -166,6 +166,173 @@
       </div>
     </section>
 
+    <!-- Checkout: a form in three steps (js/checkout.js) -->
+    <section id="checkout" class="section" aria-labelledby="checkout-title">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-10 col-xl-8">
+            <div class="form-card checkout-card">
+              <h2 class="form-title" id="checkout-title">Checkout</h2>
+              <p class="form-intro">Three short steps. What you type is saved in this browser, so you can come back later.</p>
+
+              <!-- Step indicator: classes are switched by js/checkout.js -->
+              <ol class="steps" id="checkout-steps">
+                <li class="step" data-step="1"><span class="step-number">1</span><span class="step-name">Contact</span></li>
+                <li class="step" data-step="2"><span class="step-number">2</span><span class="step-name">Delivery</span></li>
+                <li class="step" data-step="3"><span class="step-number">3</span><span class="step-name">Review</span></li>
+              </ol>
+
+              <!-- Shown instead of the form while the cart is empty -->
+              <div class="empty-state" id="checkout-locked" hidden>
+                <p class="empty-title">Nothing to check out yet.</p>
+                <p>Add pieces to your cart and the order form will open here.</p>
+              </div>
+
+              <form class="booking-form checkout-form" id="checkout-form" action="#" method="post" novalidate>
+
+                <!-- Step 1: contact details -->
+                <fieldset class="checkout-step" data-step="1">
+                  <legend class="step-title" tabindex="-1">Your contact details</legend>
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <label class="form-label" for="order-name">Full name</label>
+                      <input class="form-control" type="text" id="order-name" name="name" autocomplete="name" aria-describedby="order-name-error" required>
+                      <p class="field-error" id="order-name-error"></p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label" for="order-email">Email</label>
+                      <input class="form-control" type="email" id="order-email" name="email" autocomplete="email" placeholder="you@example.com" aria-describedby="order-email-error" required>
+                      <p class="field-error" id="order-email-error"></p>
+                    </div>
+                    <div class="col-12 col-md-6">
+                      <label class="form-label" for="order-phone">Phone</label>
+                      <input class="form-control" type="tel" id="order-phone" name="phone" autocomplete="tel" placeholder="+7 700 000 00 00" aria-describedby="order-phone-error" required>
+                      <p class="field-error" id="order-phone-error"></p>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <!-- Step 2: delivery. The address fields depend on the chosen method -->
+                <fieldset class="checkout-step" data-step="2" hidden>
+                  <legend class="step-title" tabindex="-1">How should we deliver?</legend>
+                  <div class="row g-3">
+                    <div class="col-12">
+                      <div class="method-options" role="radiogroup" aria-label="Delivery method">
+                        <label class="method-option">
+                          <input class="form-check-input" type="radio" name="method" value="delivery" checked>
+                          <span class="method-text">
+                            <span class="method-name">Delivery and assembly</span>
+                            <span class="method-note">Free anywhere in Astana</span>
+                          </span>
+                        </label>
+                        <label class="method-option">
+                          <input class="form-check-input" type="radio" name="method" value="pickup">
+                          <span class="method-text">
+                            <span class="method-name">Pick up at the showroom</span>
+                            <span class="method-note">5% off the order</span>
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Disabled (and hidden) when the visitor picks the order up -->
+                    <fieldset class="col-12 address-fields" id="address-fields">
+                      <legend class="visually-hidden">Delivery address</legend>
+                      <div class="row g-3">
+                        <div class="col-12 col-md-5">
+                          <label class="form-label" for="order-district">District</label>
+                          <select class="form-select" id="order-district" name="district" aria-describedby="order-district-error" required>
+                            <option value="" selected disabled>Choose a district</option>
+                            <option value="Almaty">Almaty</option>
+                            <option value="Baikonur">Baikonur</option>
+                            <option value="Esil">Esil</option>
+                            <option value="Nura">Nura</option>
+                            <option value="Saryarka">Saryarka</option>
+                          </select>
+                          <p class="field-error" id="order-district-error"></p>
+                        </div>
+                        <div class="col-12 col-md-7">
+                          <label class="form-label" for="order-address">Street, house and flat</label>
+                          <input class="form-control" type="text" id="order-address" name="address" autocomplete="street-address" placeholder="Kabanbay Batyr 15, flat 42" aria-describedby="order-address-error" required>
+                          <p class="field-error" id="order-address-error"></p>
+                        </div>
+                        <div class="col-6 col-md-4">
+                          <label class="form-label" for="order-floor">Floor</label>
+                          <input class="form-control" type="number" id="order-floor" name="floor" min="1" max="40" value="1" inputmode="numeric" aria-describedby="order-floor-error" required>
+                          <p class="field-error" id="order-floor-error"></p>
+                        </div>
+                        <!-- Only asked when the floor is above the first -->
+                        <div class="col-12 col-md-8 d-flex align-items-md-end" id="elevator-wrap" hidden>
+                          <div class="form-check mb-md-2">
+                            <input class="form-check-input" type="checkbox" id="order-elevator" name="elevator">
+                            <label class="form-check-label" for="order-elevator">The building has a cargo lift</label>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="order-express" name="express">
+                            <label class="form-check-label" for="order-express">Express delivery: twice as fast for <span data-price="49">$49</span></label>
+                          </div>
+                        </div>
+                      </div>
+                    </fieldset>
+
+                    <div class="col-12 col-md-6">
+                      <label class="form-label" for="order-date" id="order-date-label">Delivery date</label>
+                      <input class="form-control" type="date" id="order-date" name="date" aria-describedby="order-date-error order-date-hint" required>
+                      <p class="field-error" id="order-date-error"></p>
+                      <p class="field-hint" id="order-date-hint"></p>
+                    </div>
+                    <div class="col-12">
+                      <label class="form-label" for="order-notes">Notes for the courier (optional)</label>
+                      <textarea class="form-control" id="order-notes" name="notes" rows="3" maxlength="300" placeholder="Entrance code, best time to call…" aria-describedby="order-notes-error"></textarea>
+                      <p class="field-error" id="order-notes-error"></p>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <!-- Step 3: review the calculated totals and confirm -->
+                <fieldset class="checkout-step" data-step="3" hidden>
+                  <legend class="step-title" tabindex="-1">Check and confirm</legend>
+                  <ul class="success-summary review-list" id="review-list"></ul>
+                  <ul class="summary-list review-totals" id="review-totals"></ul>
+                  <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                      <label class="form-label" for="order-payment">Payment</label>
+                      <select class="form-select" id="order-payment" name="payment" aria-describedby="order-payment-error" required>
+                        <option value="" selected disabled>Choose how to pay</option>
+                        <option value="card">Card, when the order arrives</option>
+                        <option value="cash">Cash, when the order arrives</option>
+                        <option value="kaspi">Kaspi transfer</option>
+                      </select>
+                      <p class="field-error" id="order-payment-error"></p>
+                    </div>
+                    <div class="col-12">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="order-terms" name="terms" aria-describedby="order-terms-error" required>
+                        <label class="form-check-label" for="order-terms">I checked the order and agree to the 30-day home trial terms.</label>
+                      </div>
+                      <p class="field-error" id="order-terms-error"></p>
+                    </div>
+                  </div>
+                </fieldset>
+
+                <!-- Live total and step buttons -->
+                <div class="checkout-nav">
+                  <p class="checkout-total">Order total <strong id="checkout-total" data-price="0">$0</strong></p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-soft" type="button" id="checkout-back">Back</button>
+                    <button class="btn btn-accent" type="button" id="checkout-next">Continue</button>
+                    <button class="btn btn-accent" type="submit" id="checkout-submit">Place order</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Site footer: the same on every page -->
@@ -221,5 +388,7 @@
   <script src="js/effects.js"></script>
   <script src="js/cart-page.js"></script>
   <script src="js/insights.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/checkout.js"></script>
 </body>
 </html>

@@ -2445,3 +2445,178 @@ button.forecast-day:focus-visible {
     text-align: left;
   }
 }
+
+/* ===== Cart: checkout in three steps (js/checkout.js) ===== */
+.checkout-card {
+  height: auto;
+}
+
+/* Step indicator: 1 Contact — 2 Delivery — 3 Review */
+.steps {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 32px;
+  padding: 0;
+  list-style: none;
+  counter-reset: none;
+}
+
+.step {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 3px solid var(--color-border);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-muted);
+  transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--color-surface);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.step.is-active,
+.step.is-done {
+  border-top-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.step.is-active .step-number {
+  background-color: var(--color-accent);
+  color: #ffffff;
+}
+
+.step.is-done .step-number {
+  background-color: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* Fieldsets without the browser frame */
+.checkout-form fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.step-title {
+  float: none;
+  width: auto;
+  margin-bottom: 20px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.step-title:focus {
+  outline: none;
+}
+
+/* Delivery method: two radio buttons that look like cards */
+.method-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.method-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.method-option .form-check-input {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.method-option:has(input:checked) {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent-soft);
+}
+
+.method-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.method-name {
+  font-weight: 600;
+}
+
+.method-note {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.field-hint {
+  margin: 6px 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-muted);
+}
+
+.review-list {
+  margin-bottom: 8px;
+}
+
+.review-totals {
+  margin-bottom: 24px;
+}
+
+/* Total on the left, buttons on the right */
+.checkout-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.checkout-total {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.checkout-total strong {
+  margin-left: 8px;
+  font-size: 1.375rem;
+  color: var(--color-text);
+}
+
+@media (max-width: 575.98px) {
+  .step-name {
+    font-size: 0.8125rem;
+  }
+
+  .method-options {
+    grid-template-columns: 1fr;
+  }
+
+  .checkout-nav .d-flex {
+    width: 100%;
+  }
+
+  .checkout-nav .btn {
+    flex: 1;
+  }
+}

@@ -131,7 +131,7 @@ class FormValidator {
   // Checks one field; returns true when it is valid (fields without a rule are always valid)
   validateField(field) {
     const check = this.rules[field.name];
-    if (!check || field.disabled) {
+    if (!check || field.matches(':disabled')) { // also true inside a disabled <fieldset>
       return true;
     }
     const message = check(this.getValue(field), this.form);
