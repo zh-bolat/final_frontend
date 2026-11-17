@@ -2174,3 +2174,143 @@ body.no-scroll {
     grid-row: 1;
   }
 }
+
+/* ===== Contact: visit forecast (js/forecast.js) ===== */
+.forecast-card {
+  margin-bottom: 24px;
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+}
+
+.forecast-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px 24px;
+  margin-bottom: 20px;
+}
+
+.forecast-title {
+  margin-bottom: 6px;
+  font-size: 1.5rem;
+}
+
+.forecast-intro,
+.forecast-status {
+  margin-bottom: 0;
+  font-size: 0.9375rem;
+  color: var(--color-muted);
+}
+
+/* Seven tiles in a row; on small screens the row scrolls sideways */
+.forecast-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(112px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 4px 8px;
+  margin: -4px -4px 0;
+}
+
+.forecast-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: 196px;
+  padding: 16px 10px 14px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+button.forecast-day:hover {
+  transform: translateY(-2px);
+}
+
+button.forecast-day:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--color-accent-soft);
+}
+
+.forecast-day.is-selected {
+  border-color: var(--color-accent);
+}
+
+.forecast-name {
+  font-weight: 600;
+}
+
+.forecast-date,
+.forecast-label,
+.forecast-rain {
+  color: var(--color-muted);
+}
+
+.forecast-icon {
+  margin: 6px 0;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.forecast-temp strong {
+  font-size: 1.0625rem;
+}
+
+.forecast-badge {
+  margin-top: 6px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-pill);
+  color: var(--color-pill-dot);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Loading placeholders that slowly pulse */
+.forecast-day.is-loading {
+  background-color: var(--color-border);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* Empty and error messages take the whole row */
+.forecast-message {
+  grid-column: 1 / -1;
+  padding: 28px 24px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.forecast-message-title {
+  margin-bottom: 4px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.forecast-message.is-error .forecast-message-title {
+  color: var(--color-danger);
+}
+
+@media (max-width: 575.98px) {
+  .forecast-card {
+    padding: 20px;
+  }
+
+  .forecast-days {
+    grid-template-columns: repeat(7, 104px);
+  }
+}

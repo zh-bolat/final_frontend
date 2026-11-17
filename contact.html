@@ -103,6 +103,18 @@
     <!-- Booking: form and showroom info side by side with the Bootstrap grid -->
     <section id="booking" class="section pt-0">
       <div class="container">
+        <!-- Visit forecast: js/forecast.js loads 7 days from the Open-Meteo API -->
+        <div class="forecast-card" role="region" aria-labelledby="forecast-title">
+          <div class="forecast-head">
+            <div>
+              <h2 class="forecast-title" id="forecast-title">Weather in Astana this week</h2>
+              <p class="forecast-intro">Choose a day for your visit. Click it and the date goes straight into the form.</p>
+            </div>
+            <p class="forecast-status" id="forecast-status" aria-live="polite"></p>
+          </div>
+          <div class="forecast-days" id="forecast-days"></div>
+        </div>
+
         <div class="row g-4">
           <div class="col-12 col-lg-7">
             <div class="form-card">
@@ -262,5 +274,6 @@
   <script src="js/effects.js"></script>
   <script src="js/validation.js"></script>
   <script src="js/contact.js"></script>
+  <script src="js/forecast.js"></script>
 </body>
 </html>
