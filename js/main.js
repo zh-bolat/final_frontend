@@ -191,9 +191,40 @@ function initFavoriteButtons() {
   });
 }
 
+/* ===== "Add to cart" buttons on product cards ===== */
+
+// Makes every cart button on the page show the current quantity
+function syncCartButtons() {
+  document.querySelectorAll('.product-card').forEach(function (card) {
+    const button = card.querySelector('.add-to-cart');
+    button.textContent = getCartButtonText(card.dataset.id);
+    button.classList.toggle('is-in-cart', cart.getQuantity(card.dataset.id) > 0);
+  });
+}
+
+function initCartButtons() {
+  // Delegated like the hearts: the cards are created by JavaScript
+  document.addEventListener('click', function (event) {
+    const button = event.target.closest('.add-to-cart');
+    if (!button) {
+      return;
+    }
+
+    const product = findProductById(button.closest('.product-card').dataset.id);
+    if (cart.getQuantity(product.id) >= cart.maxQuantity) {
+      showToast('You can order up to ' + cart.maxQuantity + ' of one model', 'info');
+      return;
+    }
+
+    const quantity = cart.add(product.id);
+    showToast(quantity === 1 ? product.name + ' added to cart' : product.name + ': ' + quantity + ' in cart');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   initThemeToggle();
   initFavoriteButtons();
+  initCartButtons();
   initBackToTop();
   initStorageSync();
   renderFavorites();
@@ -209,6 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Cart.save() in js/models.js fires this event after every change
   document.addEventListener('cart:change', function () {
     renderCartCount();
+    syncCartButtons();
     bumpBadge('cart-count');
   });
 });

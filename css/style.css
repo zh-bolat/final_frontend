@@ -1532,9 +1532,26 @@ img {
   fill: currentColor;
 }
 
+/* ===== Card actions: details link and cart button ===== */
+.product-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* Green when the product is already in the cart */
+.add-to-cart.is-in-cart {
+  --bs-btn-color: var(--color-pill-dot);
+  --bs-btn-bg: var(--color-pill);
+  --bs-btn-hover-color: var(--color-pill-dot);
+  --bs-btn-hover-bg: var(--color-pill);
+}
+
 /* ===== Product details (opened with jQuery slideToggle) ===== */
 .details-toggle {
-  margin-top: 14px;
   padding: 0;
   border: 0;
   background: transparent;

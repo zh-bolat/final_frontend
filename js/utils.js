@@ -88,7 +88,15 @@ function showToast(message, type) {
   }, 3000);
 }
 
-/* ===== Product card =====
+/* ===== Product card ===== */
+
+// Text of the cart button on a card: "Add to cart" or "In cart · 2"
+function getCartButtonText(productId) {
+  const quantity = cart.getQuantity(productId);
+  return quantity === 0 ? 'Add to cart' : '✓ In cart · ' + quantity;
+}
+
+/*
    Returns a Bootstrap column with one product card inside.
    columnClass lets each page choose its own grid, e.g. "col-12 col-md-6 col-lg-4". */
 function createProductCard(product, columnClass) {
@@ -117,7 +125,10 @@ function createProductCard(product, columnClass) {
           <span class="price">${formatPrice(product.price)}</span>
         </div>
         <p class="product-card-text">${product.description}</p>
-        <button class="details-toggle" type="button" aria-expanded="false">Details <span aria-hidden="true">↓</span></button>
+        <div class="product-card-actions">
+          <button class="details-toggle" type="button" aria-expanded="false">Details <span aria-hidden="true">↓</span></button>
+          <button class="btn btn-soft btn-small add-to-cart" type="button">${getCartButtonText(product.id)}</button>
+        </div>
         <dl class="product-details">
           <div><dt>Material</dt><dd>${product.material}</dd></div>
           <div><dt>Size, cm</dt><dd>${product.size}</dd></div>
