@@ -1143,6 +1143,7 @@ img {
 
 .icon-btn:hover {
   background-color: var(--color-border);
+  color: var(--color-text); /* the cart icon is a link, it should not turn blue */
 }
 
 .icon-btn:focus-visible {

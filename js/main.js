@@ -1,6 +1,6 @@
 /*
   Forma — features shared by every page
-  (theme switcher, favorites in the navbar, back-to-top button)
+  (theme switcher, favorites and cart in the navbar, back-to-top button)
 */
 
 /* ===== Theme switcher ===== */
@@ -106,15 +106,41 @@ function renderFavorites() {
   document.getElementById('favorites-book').style.display = isEmpty ? 'none' : 'block';
 }
 
-// Short pop animation on the badge after a change
-function bumpFavoritesCount() {
-  const count = document.getElementById('favorites-count');
-  if (!count) {
+// Short pop animation on a navbar badge after a change
+function bumpBadge(id) {
+  const badge = document.getElementById(id);
+  if (!badge) {
     return;
   }
-  count.classList.remove('is-bumped');
-  void count.offsetWidth; // restart the CSS animation
-  count.classList.add('is-bumped');
+  badge.classList.remove('is-bumped');
+  void badge.offsetWidth; // restart the CSS animation
+  badge.classList.add('is-bumped');
+}
+
+/* ===== Cart counter in the navbar ===== */
+function renderCartCount() {
+  const count = cart.getCount();
+  const badge = document.getElementById('cart-count');
+  const link = document.getElementById('cart-link');
+  if (!badge || !link) {
+    return;
+  }
+  badge.textContent = count;
+  badge.classList.toggle('is-empty', count === 0);
+  link.setAttribute('aria-label', count === 0 ? 'Cart, empty' : 'Cart, ' + count + (count === 1 ? ' item' : ' items'));
+}
+
+/* ===== Keep several open tabs in sync =====
+   The "storage" event fires in the OTHER tabs when one tab changes localStorage. */
+function initStorageSync() {
+  window.addEventListener('storage', function (event) {
+    if (event.key === cart.store.key || event.key === null) {
+      cart.reload();
+    }
+    if (event.key === favoritesStore.key || event.key === null) {
+      document.dispatchEvent(new CustomEvent('favorites:change'));
+    }
+  });
 }
 
 /* ===== Back-to-top button =====
@@ -169,12 +195,20 @@ document.addEventListener('DOMContentLoaded', function () {
   initThemeToggle();
   initFavoriteButtons();
   initBackToTop();
+  initStorageSync();
   renderFavorites();
+  renderCartCount();
 
   // toggleFavorite() in utils.js fires this event after every change
   document.addEventListener('favorites:change', function () {
     renderFavorites();
     syncFavoriteButtons();
-    bumpFavoritesCount();
+    bumpBadge('favorites-count');
+  });
+
+  // Cart.save() in js/models.js fires this event after every change
+  document.addEventListener('cart:change', function () {
+    renderCartCount();
+    bumpBadge('cart-count');
   });
 });

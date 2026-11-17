@@ -36,6 +36,11 @@
             <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 20.5s-7.5-4.6-9.3-9.3C1.5 7.9 3.6 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.4 0 5.5 3.4 4.3 6.7-1.8 4.7-9.3 9.3-9.3 9.3z"/></svg>
             <span class="favorites-count" id="favorites-count">0</span>
           </button>
+          <!-- Cart: a link to cart.html, js/main.js updates the counter -->
+          <a class="icon-btn" href="cart.html" id="cart-link" aria-label="Cart, empty" title="Cart">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9L5 8zM9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+            <span class="favorites-count cart-count is-empty" id="cart-count">0</span>
+          </a>
           <!-- Theme switcher: js/main.js swaps light and dark -->
           <button class="icon-btn" type="button" id="theme-toggle" aria-label="Switch to dark theme" title="Switch theme">
             <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -189,6 +194,7 @@
             <li><a href="catalog.html">Catalog</a></li>
             <li><a href="gallery.html">Gallery</a></li>
             <li><a href="contact.html">Contact</a></li>
+            <li><a href="cart.html">Cart</a></li>
           </ul>
         </div>
         <div class="col-6 col-lg-4">
