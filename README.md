@@ -186,6 +186,51 @@ its share of the total, and the number of models, plus a **"Spend by room"** bar
 `div` elements whose width is animated with a CSS transition. Everything updates when the cart or the
 currency changes.
 
+## How to test the final features
+
+1. **Add to cart.** In the Catalog, click *Add to cart* on the Nord sofa twice and on the Kai chair once.
+   The button shows "✓ In cart · 2" and the navbar bag shows 3.
+2. **Currency.** Choose *₸ KZT* in the navbar (on a phone it is in the ☰ menu). Every price changes and
+   the note under the catalog shows the rate. Reload: KZT is still selected.
+3. **Cart CRUD.** Open the bag icon. Press + and −, type `25` into a quantity field (it stops at 10),
+   remove one item with ×, then click *Clear cart* twice.
+4. **Insights.** Add a few pieces from different rooms and scroll to *Where your budget goes*.
+   The bars and tiles change together with the cart.
+5. **Checkout.** Click *Go to checkout* and *Continue* with empty fields (three errors). Fill step 1,
+   then on step 2 try: floor `5` (the lift question appears, the total grows), *Express delivery*
+   (the earliest date moves closer), *Pick up at the showroom* (the address disappears, 5% off).
+   Pick a date earlier than the hint says to see the error.
+6. **Draft.** Reload the page in the middle of step 2: the form comes back on step 2 with your values.
+   *Clear the form* forgets it.
+7. **Place order.** On step 3 choose a payment, tick the box and click *Place order*.
+   A confirmation with an order number appears and the cart is empty.
+8. **Forecast.** On Contact, click any day tile: the date appears in *Preferred date* and the tile
+   is highlighted. To see the error state, turn on *Offline* in DevTools → Network and click *Try again*
+   after a reload.
+9. **Broken storage.** In DevTools → Console run `localStorage.setItem('forma-cart', '{oops')` and reload.
+   The cart is simply empty, no error appears.
+10. **Two tabs.** Open the Catalog in two tabs and add a product in one: the badge updates in the other.
+
+Open the browser console (F12) while testing. It stays free of errors during normal use.
+
+## Requirements coverage (final)
+
+| Requirement | Where in the code |
+|---|---|
+| API with `fetch` and `async` / `await` | `ApiService.getJson()` in `js/api.js`; `loadForecast()` in `forecast.js`, `loadRates()` in `currency.js` |
+| Loading, success, empty and error states | `renderForecastLoading()`, `renderForecast()`, `renderForecastMessage()` in `forecast.js`; `getCurrencyNoteText()` in `currency.js` |
+| JSON processed into DOM elements | `WeatherService.getForecast()` → `ForecastDay` objects → `createForecastButton()` |
+| No secret keys | both APIs are keyless |
+| Class with constructor, properties, methods | `Product`, `Cart`, `LocalStore`, `FormValidator`, `ForecastDay`, `ApiService` (+ two subclasses) |
+| Multiple objects from a class | 6 `Product`s, 6 `LocalStore`s, 7 `ForecastDay`s, 2 `FormValidator`s |
+| localStorage with JSON, restore, update, clear | see the *localStorage* table above |
+| Invalid stored values handled | `LocalStore.get()` (try/catch + validator), `Cart.load()`, `restoreDraft()` |
+| CRUD | `Cart.add` / `getLines` / `setQuantity` / `remove` / `clear`, UI in `cart-page.js` |
+| Advanced form | `checkout.js`: steps, dependent fields, calculated totals, custom validation |
+| Data visualization | `insights.js`: statistics tiles and bar chart |
+| jQuery (kept and used in new code) | `effects.js`; `slideUp` in `cart-page.js`; `animate` in `forecast.js` and `checkout.js` |
+| Network and input failures handled | `ApiError` messages + *Try again*; quantity and form messages; toasts |
+
 ## Endterm features (kept)
 
 - **Every page:** theme switcher (saved), favorites badge and panel (jQuery fades), back-to-top
