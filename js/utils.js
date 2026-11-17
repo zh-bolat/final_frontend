@@ -3,11 +3,6 @@
   Used by every page, so this file is loaded right after data.js.
 */
 
-// Turns 1490 into "$1,490"
-function formatPrice(amount) {
-  return '$' + amount.toLocaleString('en-US');
-}
-
 // Finds one product in the products array by its id (or returns undefined)
 function findProductById(id) {
   return products.find(function (product) {
@@ -122,7 +117,7 @@ function createProductCard(product, columnClass) {
       <div class="product-card-body">
         <div class="d-flex justify-content-between align-items-baseline gap-3">
           <h3 class="product-card-title">${product.name}</h3>
-          <span class="price">${formatPrice(product.price)}</span>
+          <span class="price" data-price="${product.price}">${formatPrice(product.price)}</span>
         </div>
         <p class="product-card-text">${product.description}</p>
         <div class="product-card-actions">

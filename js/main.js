@@ -65,6 +65,7 @@ function createFavoriteItem(product) {
   info.innerHTML = '<span class="favorite-name"></span><span class="favorite-price"></span>';
   info.querySelector('.favorite-name').textContent = product.name;
   info.querySelector('.favorite-price').textContent = formatPrice(product.price);
+  info.querySelector('.favorite-price').dataset.price = product.price; // updated when the currency changes
 
   const remove = document.createElement('button');
   remove.type = 'button';

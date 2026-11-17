@@ -89,7 +89,7 @@ function renderCompareTable(list) {
       <td>${product.material}</td>
       <td>${product.size}</td>
       <td>${product.getDeliveryText()}</td>
-      <td class="price text-end">${formatPrice(product.price)}</td>`;
+      <td class="price text-end" data-price="${product.price}">${formatPrice(product.price)}</td>`;
     body.appendChild(row);
   }
 }

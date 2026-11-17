@@ -1468,9 +1468,18 @@ img {
 }
 
 .results-count {
-  margin-bottom: 24px;
+  margin-bottom: 0;
   font-size: 0.9375rem;
   color: var(--color-muted);
+}
+
+/* Results count on the left, exchange rate note on the right */
+.catalog-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 24px;
+  margin-bottom: 24px;
 }
 
 /* Shown by js/catalog.js when no product matches */
@@ -1864,4 +1873,58 @@ body.no-scroll {
   .form-success {
     padding: 24px;
   }
+}
+
+/* ==========================================================
+   Final project — currency, cart, checkout, forecast
+   ========================================================== */
+
+/* ===== Navbar: currency select next to the "Visit showroom" button ===== */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.currency-select {
+  width: auto;
+  padding: 7px 34px 7px 14px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-bg);
+  background-position: right 12px center;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.currency-select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-accent-soft);
+}
+
+/* Exchange rate status (js/currency.js) */
+.currency-note {
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  color: var(--color-muted);
+}
+
+.currency-note.is-error {
+  color: var(--color-danger);
+}
+
+/* A button that looks like a text link, e.g. "Try again" */
+.link-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-accent);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-button:hover {
+  color: var(--color-accent-hover);
 }
