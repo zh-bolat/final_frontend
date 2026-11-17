@@ -4,7 +4,10 @@
 */
 
 /* ===== Theme switcher ===== */
-const THEME_KEY = 'forma-theme';
+// The same key is read by js/theme.js in <head>
+const themeStore = new LocalStore('forma-theme', null, function (value) {
+  return value === 'light' || value === 'dark';
+});
 
 function getCurrentTheme() {
   return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
@@ -24,7 +27,7 @@ function applyTheme(theme) {
   const root = document.documentElement;
   root.setAttribute('data-theme', theme);
   root.setAttribute('data-bs-theme', theme);
-  writeStorage(THEME_KEY, theme);
+  themeStore.set(theme);
   updateThemeButton(theme);
 }
 

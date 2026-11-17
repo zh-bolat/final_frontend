@@ -25,31 +25,15 @@ function getRoomLabel(value) {
   return value;
 }
 
-/* ===== localStorage helpers =====
-   localStorage can be disabled (private mode, blocked cookies),
-   so every read and write is wrapped in try...catch. */
-function readStorage(key, fallback) {
-  try {
-    const saved = localStorage.getItem(key);
-    return saved === null ? fallback : JSON.parse(saved);
-  } catch (error) {
-    return fallback;
-  }
-}
+/* ===== Favorites — saved product ids in localStorage =====
+   LocalStore (js/store.js) checks that the saved value is an array of ids. */
+const favoritesStore = new LocalStore('forma-favorites', [], isStringArray);
 
-function writeStorage(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (error) {
-    // Nothing to do: the page still works, it just will not remember the value
-  }
-}
-
-/* ===== Favorites — saved product ids in localStorage ===== */
-const FAVORITES_KEY = 'forma-favorites';
-
+// Only ids of products that still exist, so an old id can never break a page
 function getFavorites() {
-  return readStorage(FAVORITES_KEY, []);
+  return favoritesStore.get().filter(function (id) {
+    return findProductById(id) !== undefined;
+  });
 }
 
 function isFavorite(productId) {
@@ -70,7 +54,7 @@ function toggleFavorite(productId) {
     favorites.push(productId);
   }
 
-  writeStorage(FAVORITES_KEY, favorites);
+  favoritesStore.set(favorites);
 
   // Tell every part of the page (navbar counter, panel, cards) that favorites changed
   document.dispatchEvent(new CustomEvent('favorites:change'));
