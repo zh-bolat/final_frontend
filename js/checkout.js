@@ -282,12 +282,96 @@ function nextStep() {
   goToStep(currentStep + 1);
 }
 
-// Locks the form while the cart is empty
+// Locks the form while the cart is empty (and after an order was placed)
 function updateCheckoutLock() {
   const isEmpty = cart.isEmpty();
-  checkoutForm.hidden = isEmpty;
-  document.getElementById('checkout-steps').hidden = isEmpty;
-  document.getElementById('checkout-locked').hidden = !isEmpty;
+  const orderPlaced = document.querySelector('.order-success') !== null;
+  checkoutForm.hidden = isEmpty || orderPlaced;
+  document.getElementById('checkout-steps').hidden = isEmpty || orderPlaced;
+  document.getElementById('checkout-locked').hidden = !isEmpty || orderPlaced;
+}
+
+/* ===== Placing the order ===== */
+
+// Checks all three steps; returns the first step with an error, or 0
+function findFirstInvalidStep() {
+  let firstStep = 0;
+  for (let step = 1; step <= LAST_STEP; step++) {
+    const errors = checkoutValidator.validateAll(getStepFieldset(step));
+    if (errors > 0 && firstStep === 0) {
+      firstStep = step;
+    }
+  }
+  return firstStep;
+}
+
+// "FM-482913" — made from the time, so two orders never get the same number
+function createOrderNumber() {
+  return 'FM-' + String(Date.now()).slice(-6);
+}
+
+// Confirmation card shown instead of the form (styles of the booking confirmation)
+function createOrderConfirmation() {
+  const order = calculateOrder();
+  const firstName = orderFields.name.value.trim().split(/\s+/)[0];
+  const paymentSelect = orderFields.payment;
+
+  const box = document.createElement('div');
+  box.className = 'form-success order-success';
+  box.setAttribute('role', 'status');
+  box.setAttribute('tabindex', '-1');
+  box.innerHTML = `
+    <span class="success-icon" aria-hidden="true">✓</span>
+    <h3 class="success-title"></h3>
+    <p class="success-text"></p>
+    <ul class="success-summary"></ul>
+    <a class="btn btn-accent btn-small" href="catalog.html">Continue shopping</a>`;
+
+  box.querySelector('.success-title').textContent = 'Thank you, ' + firstName + '!';
+  box.querySelector('.success-text').textContent = 'Your order is placed. We will call ' +
+    orderFields.phone.value.trim() + ' the day before ' + (isPickup() ? 'pickup.' : 'delivery.');
+
+  const summary = box.querySelector('.success-summary');
+  summary.append(
+    createReviewRow('Order number', createOrderNumber()),
+    createReviewRow(isPickup() ? 'Pickup date' : 'Delivery date', formatLongDate(orderFields.date.value)),
+    createReviewRow('Pieces', String(cart.getCount())),
+    createReviewRow('Payment', paymentSelect.options[paymentSelect.selectedIndex].text)
+  );
+  const totalRow = createReviewRow('Total', '');
+  setPriceText(totalRow.lastChild, order.total);
+  summary.appendChild(totalRow);
+
+  return box;
+}
+
+function placeOrder(event) {
+  event.preventDefault(); // the page is not reloaded
+
+  if (cart.isEmpty()) {
+    return;
+  }
+
+  const invalidStep = findFirstInvalidStep();
+  if (invalidStep > 0) {
+    goToStep(invalidStep);
+    checkoutValidator.focusFirstError(getStepFieldset(invalidStep));
+    showToast('Some details are missing, please check this step', 'info');
+    return;
+  }
+
+  // The confirmation is built first, while the cart still has the items
+  const confirmation = createOrderConfirmation();
+  checkoutForm.after(confirmation);
+
+  checkoutForm.reset();
+  checkoutValidator.clear();
+  clearDraft();
+  showStep(1);
+  cart.clear(); // fires cart:change: the list, chart and badge are drawn again
+
+  confirmation.focus();
+  showToast('Order placed!');
 }
 
 // Everything that depends on the cart or on the options
@@ -370,6 +454,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('checkout-next').addEventListener('click', nextStep);
+  checkoutForm.addEventListener('submit', placeOrder);
   document.getElementById('checkout-back').addEventListener('click', function () {
     goToStep(currentStep - 1);
   });
