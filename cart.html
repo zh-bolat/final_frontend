@@ -142,6 +142,30 @@
       </div>
     </section>
 
+    <!-- Cart insights: numbers and a bar chart built by js/insights.js -->
+    <section id="insights" class="section section-surface" aria-labelledby="insights-title">
+      <div class="container">
+        <div class="section-header">
+          <p class="eyebrow">Cart insights</p>
+          <h2 class="section-title" id="insights-title">Where your budget <span class="serif-accent">goes</span>.</h2>
+          <p class="section-lead">A quick look at your cart: what the average piece costs and how the total is split between rooms.</p>
+        </div>
+
+        <div class="row g-4">
+          <div class="col-12 col-lg-5">
+            <ul class="insight-stats" id="insight-stats"></ul>
+          </div>
+          <div class="col-12 col-lg-7">
+            <div class="chart-card">
+              <h3 class="chart-title" id="room-chart-title">Spend by room</h3>
+              <ul class="bar-chart" id="room-chart" aria-labelledby="room-chart-title"></ul>
+              <p class="chart-empty" id="chart-empty" hidden>Add a few pieces to your cart and the chart will show how the total is split between rooms.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- Site footer: the same on every page -->
@@ -196,5 +220,6 @@
   <script src="js/main.js"></script>
   <script src="js/effects.js"></script>
   <script src="js/cart-page.js"></script>
+  <script src="js/insights.js"></script>
 </body>
 </html>
