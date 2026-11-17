@@ -261,6 +261,7 @@ function getStepFieldset(step) {
 // Moves to another step and puts the focus on its title
 function goToStep(step) {
   showStep(step);
+  saveDraft(); // the step is part of the draft
   const title = getStepFieldset(step).querySelector('.step-title');
   title.focus({ preventScroll: true });
   const top = $('#checkout').offset().top - $('.site-header').outerHeight();
@@ -300,10 +301,73 @@ function refreshCheckout() {
   }
 }
 
+/* ===== Draft: the form is saved in localStorage while the visitor types =====
+   Saved: { step: 2, values: { name: "...", method: "delivery", express: true, ... } }
+   The terms checkbox is never saved: the visitor confirms each order again. */
+const DRAFT_FIELDS = ['name', 'email', 'phone', 'method', 'district', 'address', 'floor', 'elevator', 'express', 'date', 'notes', 'payment'];
+
+const draftStore = new LocalStore('forma-checkout-draft', null, function (value) {
+  return isPlainObject(value) && isPlainObject(value.values) && Number.isInteger(value.step);
+});
+
+function saveDraft() {
+  const values = {};
+  DRAFT_FIELDS.forEach(function (name) {
+    const field = orderFields[name];
+    values[name] = field.type === 'checkbox' ? field.checked : field.value;
+  });
+  draftStore.set({ step: currentStep, values: values });
+}
+
+// Puts saved values back; anything of the wrong type is skipped
+function restoreDraft() {
+  const draft = draftStore.get();
+  if (draft === null) {
+    return 1;
+  }
+
+  DRAFT_FIELDS.forEach(function (name) {
+    const value = draft.values[name];
+    const field = orderFields[name];
+    if (field.type === 'checkbox' && typeof value === 'boolean') {
+      field.checked = value;
+    } else if (field.type !== 'checkbox' && typeof value === 'string') {
+      field.value = value; // for the radio group this checks the matching radio
+    }
+  });
+
+  if (!orderFields.method.value) {
+    orderFields.method.value = 'delivery';
+  }
+  return Math.min(Math.max(draft.step, 1), LAST_STEP);
+}
+
+function clearDraft() {
+  draftStore.clear();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
   checkoutValidator.watch();
-  showStep(1);
+  const savedStep = restoreDraft();
+  showStep(savedStep);
   refreshCheckout();
+  if (savedStep > 1 && !cart.isEmpty()) {
+    showToast('We restored your checkout details', 'info');
+  }
+
+  // Every change is saved at once, so a reload loses nothing
+  checkoutForm.addEventListener('input', saveDraft);
+  checkoutForm.addEventListener('change', saveDraft);
+
+  // Forgets the saved draft and starts again from step 1
+  document.getElementById('checkout-reset').addEventListener('click', function () {
+    checkoutForm.reset();
+    checkoutValidator.clear();
+    goToStep(1);
+    refreshCheckout();
+    clearDraft();
+    showToast('The checkout form is empty again', 'info');
+  });
 
   document.getElementById('checkout-next').addEventListener('click', nextStep);
   document.getElementById('checkout-back').addEventListener('click', function () {
